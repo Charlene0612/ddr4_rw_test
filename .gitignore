@@ -1,0 +1,14 @@
+# 忽略文件夹
+.Xil/
+ddr4_rw.cache/
+ddr4_rw.hw/
+ddr4_rw.ip_user_files/
+ddr4_rw.runs/
+ddr4_rw.sim/
+
+
+# 忽略文件 .jou, .log, .str, .tmp
+*.jou
+*.log
+*.str
+*.tmp
