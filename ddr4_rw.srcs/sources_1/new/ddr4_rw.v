@@ -1,12 +1,12 @@
 // `define ILA_DDR4_RW
  module ddr4_rw #(
 //  parameter  L_TIME = 25'd25_000_000,
-//  parameter  IDLE        = 2'd0,            //¿ÕÏÐ×´Ì¬
-//  parameter  WRITE       = 2'd1,            //Ð´×´Ì¬
-//  parameter  WAIT        = 2'd2,            //¶Áµ½Ð´¹ý¶ÈµÈ´ý
-//  parameter  READ        = 2'd3,            //¶Á×´Ì¬
- parameter  DATA_WIDTH = 16,
- parameter  CHANNEL_NUM = 32,
+  parameter  IDLE        = 2'd0,            //¿ÕÏÐ×´Ì¬
+  parameter  WRITE       = 2'd1,            //Ð´×´Ì¬
+  parameter  WAIT        = 2'd2,            //¶Áµ½Ð´¹ý¶ÈµÈ´ý
+  parameter  READ        = 2'd3,            //¶Á×´Ì¬
+  parameter  DATA_WIDTH = 16,
+  parameter  CHANNEL_NUM = 32,
 // parameter  MEM_NUM = 1000,
 // parameter  TEST_LENGTH = CHANNEL_NUM*MEM_NUM
 // parameter  TEST_LENGTH = 64
@@ -61,10 +61,7 @@
      output reg               ddr_rd_over            //¶ÁÍê±ê¼Ç
      );
  
- parameter  IDLE        = 2'd0;            //¿ÕÏÐ×´Ì¬
- parameter  WRITE       = 2'd1;            //Ð´×´Ì¬
- parameter  WAIT        = 2'd2;            //¶Áµ½Ð´¹ý¶ÈµÈ´ý
- parameter  READ        = 2'd3;            //¶Á×´Ì¬
+
 
  //reg define
 //  reg  [24:0]  led_cnt;    //led¼ÆÊý

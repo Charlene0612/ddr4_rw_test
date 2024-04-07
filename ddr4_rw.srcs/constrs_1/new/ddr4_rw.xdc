@@ -5,7 +5,7 @@ set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 #set_property IOSTANDARD LVCMOS33 [get_ports {led[0]}]
 #set_property PACKAGE_PIN AF10 [get_ports {led[1]}]
 #set_property PACKAGE_PIN AE10 [get_ports {led[0]}]
-set_property -dict {PACKAGE_PIN AF10 IOSTANDARD LVCMOS33} [get_ports led]
+#set_property -dict {PACKAGE_PIN AF10 IOSTANDARD LVCMOS33} [get_ports led]
 
 
 set_property IOSTANDARD LVCMOS33 [get_ports sys_rst_n]

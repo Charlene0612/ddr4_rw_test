@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------------------------
 //****************************************************************************************//
 module ddr4_rw_top(
-  //从mig核输出的,为什么要输出，输出给谁
+  //从mig核输出的,为什么要输出，输出给谁（输出可能是为了方便ILA在线观测）
   output                             c0_ddr4_act_n   ,  //DDR4写操作响应信号，
 	output [16:0]                      c0_ddr4_adr     ,  //DDR4地址，
 	output [1:0]                       c0_ddr4_ba      ,  //DDR4 bank地址，
@@ -23,21 +23,19 @@ module ddr4_rw_top(
 	//Differential system clocks
 	input                              c0_sys_clk_p,
 	input                              c0_sys_clk_n,
-  input                              sys_rst_n,
+    input                              sys_rst_n,
 	// output                             led,
-
 
   //从PS端输入
   input                              c0_ddr4_app_wdf_data,//向DDR写入的数据
   input                              ddr_wr_over_ps,//ps端写数据完成  
 
   //从定时器输入
-  input                              fiao_wr_en,
-
-  // output                             ddr_wr_over,//写数据完成，由PS端发送
-
+  input                              fiao_wr_en,//说明定时器fiao未写满，可以继续写入
+  
   //输出到定时器
-	output                             c0_ddr4_app_rd_data,//从DDR读出的数据
+  output                           c0_ddr4_app_rd_data,//从DDR读出的数据
+  output                             ddr_wr_over,//写数据完成
 
 	
 	//输出到PS端的中断
@@ -46,9 +44,6 @@ module ddr4_rw_top(
     );                
                       
  //wire define  
-
-wire                 error_flag;
-
 wire c0_ddr4_ui_clk                ;
 wire c0_ddr4_ui_clk_sync_rst       ;//复位，高有效
 wire c0_ddr4_app_en                ;
@@ -59,7 +54,7 @@ wire c0_ddr4_app_rd_data_end       ;
 wire c0_ddr4_app_rd_data_valid     ; 
 wire c0_ddr4_app_rdy               ; 
 wire c0_ddr4_app_wdf_rdy           ; 
-wire [27 : 0] c0_ddr4_app_addr     ;
+wire [27 : 0] c0_ddr4_app_addr     ;//用户地址，读写通用
 wire [2 : 0] c0_ddr4_app_cmd       ;
 // wire [127 : 0] c0_ddr4_app_wdf_data;
 wire [15 : 0] c0_ddr4_app_wdf_mask ;
@@ -67,16 +62,17 @@ wire [15 : 0] c0_ddr4_app_wdf_mask ;
 
 
 
-wire                  locked;              //锁相环频率稳定标志
-wire                  clk_ref_i;           //DDR3参考时钟
-wire                  sys_clk_i;           //MIG IP核输入时钟
-wire                  clk_200;             //200M时钟
-wire                  ui_clk_sync_rst;     //用户复位信号
-wire                  init_calib_complete; //校准完成信号
-wire [20:0]           rd_cnt;              //实际读地址计数
+wire                  locked;               //锁相环频率稳定标志
+wire                  clk_ref_i;            //DDR3参考时钟
+wire                  sys_clk_i;            //MIG IP核输入时钟
+wire                  clk_200;              //200M时钟
+wire                  ui_clk_sync_rst;      //用户复位信号
+wire                  c0_init_calib_complete; //校准完成信号
+wire [20:0]           rd_cnt;               //实际读地址计数
 wire [1 :0]           state;                //状态计数器
-wire [23:0]           rd_addr_cnt;         //用户读地址计数器
-wire [23:0]           wr_addr_cnt;         //用户写地址计数器
+// wire [23:0]           rd_addr_cnt;         //用户读地址计数器
+// wire [23:0]           wr_addr_cnt;         //用户写地址计数器
+
 
 //*****************************************************
 //**                    main code
@@ -85,60 +81,37 @@ wire [23:0]           wr_addr_cnt;         //用户写地址计数器
 // (* keep_hierarchy="yes" *)，这个是保持层次结构的意思，防止综合工具优化导致ila无法捕获信号
 
 //读写模块
-//  ddr4_rw u_ddr4_rw(
-//     .ui_clk               (c0_ddr4_ui_clk),                
-//     .ui_clk_sync_rst      (c0_ddr4_ui_clk_sync_rst),       
-//     .init_calib_complete  (c0_init_calib_complete),
-//     .app_rdy              (c0_ddr4_app_rdy),
-//     .app_wdf_rdy          (c0_ddr4_app_wdf_rdy),
-//     .app_rd_data_valid    (c0_ddr4_app_rd_data_valid),
-//     .app_rd_data          (c0_ddr4_app_rd_data),
-    
-//     // .app_addr             (c0_ddr4_app_addr), 
-//     .app_en               (c0_ddr4_app_en),
-//     .app_wdf_wren         (c0_ddr4_app_wdf_wren),
-//     .app_wdf_end          (c0_ddr4_app_wdf_end),
-//     .app_cmd              (c0_ddr4_app_cmd),
-//     // .app_wdf_data         (c0_ddr4_app_wdf_data),
-//     .state                (state),
-//     .rd_addr_cnt          (rd_addr_cnt),
-//     .wr_addr_cnt          (wr_addr_cnt),
-//     .rd_cnt               (rd_cnt),
-    
-//     // .error_flag           (error_flag),
-//     // .led                  (led),
-    
-//     .ddr_wr_over          (ddr_wr_over),
-//     .ddr_rd_over          (ddr_rd_over)
-    
-//     );
-
-ddr4_rw #(
+ ddr4_rw #(
     .DATA_WIDTH(16),
     .CHANNEL_NUM(32),
     .TEST_LENGTH(1024*32)
-) u_ddr4_rw (
-    .ddr_wr_over_ps(ddr_wr_over_ps),
-    .ui_clk(ui_clk),
-    .ui_clk_sync_rst(ui_clk_sync_rst),
-    .init_calib_complete(init_calib_complete),
-    .app_rdy(app_rdy),
-    .app_wdf_rdy(app_wdf_rdy),
-    .app_rd_data_valid(app_rd_data_valid),
-    // .app_rd_data(app_rd_data),
-    .fiao_wr_en(fiao_wr_en),
-    .app_en(app_en),
-    .app_wdf_wren(app_wdf_wren),
-    .app_wdf_end(app_wdf_end),
-    .app_cmd(app_cmd),
-    .state(state),
-    .rd_addr_cnt(rd_addr_cnt),
-    .rd_cnt(rd_cnt),
-    .ddr_wr_over(ddr_wr_over),
-    .ddr_rd_over(ddr_rd_over)
-);
-
-
+) u_ddr4_rw(
+    .ddr_wr_over_ps       (ddr_wr_over_ps),
+    .ui_clk               (c0_ddr4_ui_clk),                
+    .ui_clk_sync_rst      (c0_ddr4_ui_clk_sync_rst),       
+    .init_calib_complete  (c0_init_calib_complete),
+    .app_rdy              (c0_ddr4_app_rdy),
+    .app_wdf_rdy          (c0_ddr4_app_wdf_rdy),
+    .app_rd_data_valid    (c0_ddr4_app_rd_data_valid),
+//    .app_rd_data          (c0_ddr4_app_rd_data),
+    .app_addr             (c0_ddr4_app_addr), 
+    .app_en               (c0_ddr4_app_en),
+    .app_wdf_wren         (c0_ddr4_app_wdf_wren),
+    .app_wdf_end          (c0_ddr4_app_wdf_end),
+    .app_cmd              (c0_ddr4_app_cmd),
+    // .app_wdf_data         (c0_ddr4_app_wdf_data),
+    .state                (state),
+    // .rd_addr_cnt          (rd_addr_cnt),
+    // .wr_addr_cnt          (wr_addr_cnt),
+    .rd_cnt               (rd_cnt),
+    
+    // .error_flag           (error_flag),
+    // .led                  (led),
+    
+    // .ddr_wr_over          (ddr_wr_over),
+    .ddr_rd_over          (ddr_rd_over)
+    
+    );
 
 
 //例化mig核
