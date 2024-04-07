@@ -1,0 +1,102 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x0",
+      "device": "xczu2cg-sfvc784-2-i",
+      "name": "design_1",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2020.2"
+    },
+    "design_tree": {
+      "zynq_ultra_ps_e_0": ""
+    },
+    "components": {
+      "zynq_ultra_ps_e_0": {
+        "vlnv": "xilinx.com:ip:zynq_ultra_ps_e:3.3",
+        "xci_name": "design_1_zynq_ultra_ps_e_0_0",
+        "addressing": {
+          "address_spaces": {
+            "Data": {
+              "range": "1T",
+              "width": "40",
+              "local_memory_map": {
+                "name": "Data",
+                "description": "Address Space Segments",
+                "address_blocks": {
+                  "address_block": {
+                    "name": "M_AXI_HPM0_LPD:LPD_AFI_FS",
+                    "display_name": "M_AXI_HPM0_LPD/LPD_AFI_FS",
+                    "base_address": "0x80000000",
+                    "range": "512M",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "M_AXI_HPM1_FPD:FPD_AFI_FS0_00",
+                    "display_name": "M_AXI_HPM1_FPD/FPD_AFI_FS0_00",
+                    "base_address": "0xB0000000",
+                    "range": "256M",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "M_AXI_HPM1_FPD:FPD_AFI_FS0_01",
+                    "display_name": "M_AXI_HPM1_FPD/FPD_AFI_FS0_01",
+                    "base_address": "0x000500000000",
+                    "range": "4G",
+                    "width": "35",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "M_AXI_HPM1_FPD:FPD_AFI_FS0_10",
+                    "display_name": "M_AXI_HPM1_FPD/FPD_AFI_FS0_10",
+                    "base_address": "0x004800000000",
+                    "range": "224G",
+                    "width": "39",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "M_AXI_HPM0_FPD:FPD_AFI_FS1_00",
+                    "display_name": "M_AXI_HPM0_FPD/FPD_AFI_FS1_00",
+                    "base_address": "0xA0000000",
+                    "range": "256M",
+                    "width": "32",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "M_AXI_HPM0_FPD:FPD_AFI_FS1_01",
+                    "display_name": "M_AXI_HPM0_FPD/FPD_AFI_FS1_01",
+                    "base_address": "0x000400000000",
+                    "range": "4G",
+                    "width": "35",
+                    "usage": "register"
+                  },
+                  "address_block": {
+                    "name": "M_AXI_HPM0_FPD:FPD_AFI_FS1_10",
+                    "display_name": "M_AXI_HPM0_FPD/FPD_AFI_FS1_10",
+                    "base_address": "0x001000000000",
+                    "range": "224G",
+                    "width": "39",
+                    "usage": "register"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "interface_ports": {
+          "M_AXI_HPM0_LPD": {
+            "mode": "Master",
+            "address_space_ref": "Data",
+            "base_address": {
+              "minimum": "0x80000000",
+              "maximum": "0x9FFFFFFF",
+              "width": "40"
+            }
+          }
+        }
+      }
+    }
+  }
+}
